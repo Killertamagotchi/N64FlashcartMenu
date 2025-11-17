@@ -36,7 +36,7 @@ static char *format_emulator_name (cart_load_emu_type_t emulator_info) {
 
 static void process (menu_t *menu) {
     if (menu->actions.enter) {
-        menu->boot_pending.emulator_file = true;
+        menu->load_pending.emulator_file = true;
     } else if (menu->actions.back) {
         sound_play_effect(SFX_EXIT);
         menu->next_mode = MENU_MODE_BROWSER;
@@ -48,17 +48,19 @@ static void draw (menu_t *menu, surface_t *d) {
 
     ui_components_background_draw();
 
-    if (menu->boot_pending.emulator_file) {
-        ui_components_loader_draw(0.0f);
+    if (menu->load_pending.emulator_file) {
+        ui_components_loader_draw(0.0f, NULL);
     } else {
         ui_components_layout_draw();
 
         ui_components_main_text_draw(
+            STL_DEFAULT,
             ALIGN_CENTER, VALIGN_TOP,
             "Load Emulated ROM\n"
         );
 
         ui_components_main_text_draw(
+            STL_DEFAULT,
             ALIGN_LEFT, VALIGN_TOP,
             "\n"
             "\n"
@@ -69,6 +71,7 @@ static void draw (menu_t *menu, surface_t *d) {
         );
 
         ui_components_actions_bar_text_draw(
+            STL_DEFAULT,
             ALIGN_LEFT, VALIGN_TOP,
             "A: Load and run Emulated ROM\n"
             "B: Exit"
@@ -86,7 +89,7 @@ static void draw_progress (float progress) {
 
         ui_components_background_draw();
 
-        ui_components_loader_draw(progress);
+        ui_components_loader_draw(progress, "Loading emulated ROM...");
 
         rdpq_detach_show();
     }
@@ -109,7 +112,7 @@ static void load (menu_t *menu) {
 
 
 void view_load_emulator_init (menu_t *menu) {
-    menu->boot_pending.emulator_file = false;
+    menu->load_pending.emulator_file = false;
 
     path_t *path = path_clone_push(menu->browser.directory, menu->browser.entry->name);
 
@@ -137,8 +140,8 @@ void view_load_emulator_display (menu_t *menu, surface_t *display) {
 
     draw(menu, display);
 
-    if (menu->boot_pending.emulator_file) {
-        menu->boot_pending.emulator_file = false;
+    if (menu->load_pending.emulator_file) {
+        menu->load_pending.emulator_file = false;
         load(menu);
     }
 }

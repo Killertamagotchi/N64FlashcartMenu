@@ -9,6 +9,7 @@
 
 #include <libdragon.h>
 #include "menu_state.h"
+#include "fonts.h"
 
 
 /** 
@@ -28,6 +29,23 @@ typedef enum {
     IMAGE_THUMBNAIL,       /**< File image thumbnail */
     IMAGE_TYPE_END         /**< List end marker */
 } file_image_type_t;
+
+/** 
+ * @brief File information Structure.
+ * 
+ * Structure with file information displayed used in the user interface.
+ */
+typedef struct {
+    bool directory;                     /**< Directory rather than a file */
+    bool writeable;                     /**< File is writeable */
+    bool encrypted;                     /**< File is encrypted */
+    time_t mtime;                       /**< Last modification time */
+    uint64_t size;                      /**< File size in bytes */
+    uint64_t compressed;                /**< File size in bytes while compressed */
+    uint32_t crc32;                     /**< Checksum for compressed files */
+    bool is_controller_pak_dump;        /**< file is a controller pak dump */
+    bool is_controller_pak_dump_note;   /**< file is a controller pak dump note */
+} file_info_t;
 
 /**
  * @brief Draw a box component.
@@ -82,8 +100,9 @@ void ui_components_seekbar_draw(float progress);
  * @brief Draw a loader component.
  * 
  * @param position Position value (0.0 to 1.0).
+ * @param msg Message to display, truncated to 30 characters.
  */
-void ui_components_loader_draw(float position);
+void ui_components_loader_draw(float progress, const char *msg);
 
 /**
  * @brief Draw a scrollbar component.
@@ -126,22 +145,24 @@ void ui_components_messagebox_draw(char *fmt, ...);
 /**
  * @brief Draw the main text component.
  * 
+ * @param style The font style.
  * @param align Horizontal alignment.
  * @param valign Vertical alignment.
  * @param fmt Format string for the text.
  * @param ... Additional arguments for the format string.
  */
-void ui_components_main_text_draw(rdpq_align_t align, rdpq_valign_t valign, char *fmt, ...);
+void ui_components_main_text_draw(menu_font_type_t style, rdpq_align_t align, rdpq_valign_t valign, char *fmt, ...);
 
 /**
  * @brief Draw the actions bar text component.
  * 
+ * @param style The font style.
  * @param align Horizontal alignment.
  * @param valign Vertical alignment.
  * @param fmt Format string for the text.
  * @param ... Additional arguments for the format string.
  */
-void ui_components_actions_bar_text_draw(rdpq_align_t align, rdpq_valign_t valign, char *fmt, ...);
+void ui_components_actions_bar_text_draw(menu_font_type_t style, rdpq_align_t align, rdpq_valign_t valign, char *fmt, ...);
 
 /**
  * @brief Initialize the background component.
@@ -238,10 +259,11 @@ typedef struct {
  * 
  * @param storage_prefix Prefix for the storage location.
  * @param game_code Game code for the box art.
+ * @param rom_title Title of the ROM (may be NULL). If used, it is sanitized for filesystem safety.
  * @param current_image_view Current image view type.
  * @return Pointer to the initialized box art component.
  */
-component_boxart_t *ui_components_boxart_init(const char *storage_prefix, char *game_code, file_image_type_t current_image_view);
+component_boxart_t *ui_components_boxart_init(const char *storage_prefix, const char *game_code, const char *rom_title, file_image_type_t current_image_view);
 
 /**
  * @brief Free the box art component resources.
@@ -265,7 +287,7 @@ void ui_components_boxart_draw(component_boxart_t *b);
  * @param selected Index of the selected tab.
  * @param width Width of the tabs.
  */
-void ui_components_tabs_draw(const char **text, int count, int selected, float width );
+void ui_components_tabs_draw(const char **text, int count, int selected, float width);
 
 /**
  * @brief Draw the common part of the tabs component.
@@ -273,5 +295,24 @@ void ui_components_tabs_draw(const char **text, int count, int selected, float w
  * @param selected Index of the selected tab.
  */
 void ui_components_tabs_common_draw(int selected);
+
+/**
+ * @brief Draw a value editor component.
+ * 
+ * @param header_text Array of header text for the values.
+ * @param value_text Array of value text to be displayed.
+ * @param count Number of values.
+ * @param selected Index of the selected value.
+ * @param width_adjustment Negative width adjustment of each value box.
+ */
+void ui_component_value_editor(const char **header_text, const char **value_text, int count, int selected, float width_adjustment);
+
+/**
+ * @brief Draw the file info component.
+ * 
+ * @param filename Name of the file for which to show the information.
+ * @param info Metadata information of the file to be displayed.
+ */
+void ui_components_file_info_draw (char* filename, file_info_t *info);
 
 #endif /* UI_COMPONENTS_H__ */
