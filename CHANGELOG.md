@@ -8,23 +8,39 @@
 
 - **New Features**
 	- ~~Browser now allows hiding files and folders with hidden attributes set (thanks [Xeroxxx](https://github.com/Xeroxxx)).~~ Awaiting performance enhancement.
+	- Add low voltage warning on startup for flashcarts that support it.
+	- Add metadata for the menu ROM.
 
 - **Bug Fixes**
+	- Fix Datel Code Types:
+		- `DE` cheat codes no longer consume the next cheat line like other conditional opcodes (`D0`, `D1`, `D2`, `D3`).
+  		- `DE` opcodes are still ignored by the cheat engine, but they don't prevent the next line from executing anymore.
+  		- E.g., `DE000400 0000` followed by `EE000000 0000` (for 1080° Snowboarding) would previously skip the `EE` line, causing the game to freeze at startup.
+	- Fix (opt-in flag) autoload feature failing to load paths correctly.
+	
 
 - **Documentation**
+	- None.
 
 - **Refactor**
+	- DFS: Each asset type is now contained within a subdirectory rather than a flat file system.
+	- Improve Expansion pak use wording to align with n64brew header support.
 
 - **Other**
+	- Removed deprecated boxart compatibility (it has been an opt-in build flag since V0.3.0)
+	- Update libdragon submodule to latest version.
+	- Update dr_libs submodule to latest version.
+	- Update libspng submodule to latest version.
+	- Update miniz submodule to latest version.
 
 ### Breaking changes
 - None.
 
 ### Notes
-- None.
+- dragonminded/libdragon was archived. As a stepping stone, the links were changed to n64brew/libdragon.
 
 ### Current known Issues
-- Fast Rebooting a 64DD disk once will result in a blank screen. Twice will return to menu. This is expected until disk swapping is fully implemented.
+- Fast Rebooting a 64DD disk once will result in a blank screen. Twice will return to menu.
 - PixelFX HDMI mods may need to be updated to latest FW to support display.
 
 ### Deprecation notices
@@ -36,7 +52,7 @@
 	- ~~Browser now allows hiding files and folders with hidden attributes set (thanks [Xeroxxx](https://github.com/Xeroxxx)).~~ Awaiting performance enhancement.
 
 - **Bug Fixes**
-	- Fix: Certain libdragon ROMs between August 2023 and April 2025 stopped working. Added Add VI->CR reset to boot.c
+	- Fix: Certain libdragon ROMs between August 2023 and April 2025 stopped working. Added VI->CR reset to boot.c
 	- Fix: Certain Aleck64 conversions not working. Added checksum match to boot.c
 
 - **Documentation**
@@ -55,7 +71,7 @@
 - None.
 
 ### Current known Issues
-- Fast Rebooting a 64DD disk once will result in a blank screen. Twice will return to menu. This is expected until disk swapping is fully implemented.
+- Fast Rebooting a 64DD disk once will result in a blank screen. Twice will return to menu.
 - PixelFX HDMI mods may need to be updated to latest FW to support display.
 
 ### Deprecation notices
